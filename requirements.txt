@@ -25,7 +25,6 @@ cohere==5.11.1
 colorama==0.4.6
 coloredlogs==15.0.1
 crewai==0.76.2
-crewai-enterprise-content-marketing-ideas==0.1.0
 crewai-tools==0.13.2
 cryptography==43.0.3
 dataclasses-json==0.6.7
