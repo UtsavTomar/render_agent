@@ -4,7 +4,7 @@ from crew import CrewaiPlusLeadScoringCrew
 
 def run(inputs):
     inputs = inputs
-    CrewaiPlusLeadScoringCrew().crew().kickoff(inputs=inputs)
+    return CrewaiPlusLeadScoringCrew().crew().kickoff(inputs=inputs)
 
 
 def train():
