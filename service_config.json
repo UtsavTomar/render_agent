@@ -1,0 +1,10 @@
+{
+  "services": [
+    {
+      "host": "localhost",
+      "port": 8000,
+      "assigned": false,
+      "service_name": "default_service"
+    }
+  ]
+}
