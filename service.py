@@ -4,6 +4,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Dict, Any, Optional, List
 from main import run_main
+import sys
 
 # class ServiceConfig(BaseModel):
 #     host: str
@@ -70,7 +71,8 @@ app = FastAPI(title=f"Python Service API - {service_config['service_name']}")
 @app.post("/run")
 async def input_main(input_data: InputModel):
     try:
-        result = run_main(input_data.data,input_data.apikeys)
+        run_main(input_data.data,input_data.apikeys)
+        result = sys.stdout
         return {"status": "success", "result": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
