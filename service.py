@@ -49,7 +49,6 @@ import sys
 
 class InputModel(BaseModel):
     data: Dict[str, Any]
-    apikeys: Dict[str, Any]
 
 # # Initialize FastAPI app with config management
 # config_path = os.path.join(os.path.dirname(__file__), "service_config.json")
