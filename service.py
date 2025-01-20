@@ -70,7 +70,7 @@ app = FastAPI(title=f"Python Service API - {service_config['service_name']}")
 @app.post("/run")
 async def input_main(input_data: InputModel):
     try:
-        run_main(input_data.data,input_data.apikeys)
+        run_main(input_data.data)
         result = sys.stdout
         return {"status": "success", "result": result}
     except Exception as e:
