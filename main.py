@@ -54,6 +54,4 @@ def run_main(custom_inputs=None):
     return run(input_data)
 
 
-def main(custom_inputs=None):
-    input_data = custom_inputs if custom_inputs is not None else {}
-    return run(input_data)
+
