@@ -3,7 +3,9 @@ import os
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Dict, Any, Optional, List
-from main import main
+# from main import main
+
+import subprocess
 
 class ServiceConfig(BaseModel):
     host: str
@@ -50,22 +52,49 @@ class InputModel(BaseModel):
     data: Dict[str, Any]
 
 # Initialize FastAPI app with config management
-config_path = os.path.join(os.path.dirname(__file__), "service_config.json")
-config_manager = ConfigManager(config_path)
-service_config = config_manager.get_available_service()
+# config_path = os.path.join(os.path.dirname(__file__), "service_config.json")
+# config_manager = ConfigManager(config_path)
+# service_config = config_manager.get_available_service()
 
-if not service_config:
-    raise Exception("No available service configurations found")
+# if not service_config:
+#     raise Exception("No available service configurations found")
 
-app = FastAPI(title=f"Python Service API - {service_config.service_name}")
+app = FastAPI()
 
 @app.post("/run")
 async def run_main(input_data: InputModel):
     try:
-        result = main(input_data.data)
-        return {"status": "success", "result": result}
+        # Execute the command and capture both stdout and stderr
+        result = subprocess.run(
+            "crewai run", shell=True, capture_output=True, text=True
+        )
+        
+        # Save stdout to a file
+        output_file = "command_output.txt"
+        with open(output_file, "w") as file:
+            file.write(result.stdout)
+        
+        # Save stderr (errors) to a separate file, if any
+        error_file = "command_errors.txt"
+        if result.stderr:
+            with open(error_file, "w") as file:
+                file.write(result.stderr)
+        
+        # Print messages for logging purposes
+        print(f"Command output saved to {output_file}")
+        if result.stderr:
+            print(f"Command errors saved to {error_file}")
+        
+        # Return status, stdout, and stderr in the API response
+        return {
+            "status": "success" if result.returncode == 0 else "failure",
+            "stdout": result.stdout,
+            "stderr": result.stderr,
+            "returncode": result.returncode
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.get("/health")
 async def health_check():
@@ -76,19 +105,11 @@ async def health_check():
         "port": service_config.port
     }
 
-@app.on_event("startup")
-async def startup_event():
-    config_manager.mark_service_as_used(service_config.host, service_config.port)
 
-@app.on_event("shutdown")
-async def shutdown_event():
-    config_manager.release_service(service_config.host, service_config.port)
 
 if __name__ == "__main__":
     import uvicorn
-    print(f"Starting service on {service_config.host}:{service_config.port}")
+
     uvicorn.run(
-        app, 
-        host=service_config.host, 
-        port=service_config.port
+        app
     )
